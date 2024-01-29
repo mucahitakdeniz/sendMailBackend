@@ -5,17 +5,15 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+app.use(express.json());
+app.use(cors());
 
 require("dotenv").config();
-const mail = process.env?.mail;
+const myEmail = process.env?.mail;
 const password = process.env?.password;
 const PORT = process.env?.PORT;
 
-// CORS middleware'i ekleyin
-app.use(cors());
-
 // Middleware for parsing JSON data
-app.use(express.json());
 
 app.post("/sendmail", (req, res) => {
   const { name, email, company, message } = req.body;
@@ -32,15 +30,15 @@ app.post("/sendmail", (req, res) => {
               let transporter = nodemailer.createTransport({
                 service: "gmail",
                 auth: {
-                  user: mail,
+                  user: myEmail,
                   pass: password,
                 },
               });
 
               // Compose the email
               let mailOptions = {
-                from: email, // Changed from: mail
-                to: mail,
+                from: email,
+                to: myEmail,
                 subject: "New Contact Form Submission",
                 text: `Name: ${name}\nEmail: ${email}\nCompany: ${company}\nMessage: ${message}`,
               };
@@ -63,31 +61,26 @@ app.post("/sendmail", (req, res) => {
               res.status(500).json({ error: "Internal server error" });
             }
           } else {
-            res.errorStatusCode = 403;
-            throw new Error(
-              " Email is not available. Please enter an available email "
-            );
+            res.status(403).json({ error: "Invalid email address" });
+            return;
           }
         } else {
-          res.errorStatusCode = 400;
-          throw new Error("Message required ");
+          res.status(400).json({ error: "Message required" });
+          return;
         }
       } else {
-        res.errorStatusCode = 400;
-        throw new Error("Company required ");
+        res.status(400).json({ error: "Company required" });
+        return;
       }
     } else {
-      res.errorStatusCode = 400;
-      throw new Error("Email required ");
+      res.status(400).json({ error: "Email required" });
+      return;
     }
   } else {
-    res.errorStatusCode = 400;
-    throw new Error("Name required ");
+    res.status(403).json({ error: "Name required" });
+    return;
   }
 });
-
-//errorHandler
-app.use(require("./errorHandler"));
 
 // Start the server
 app.listen(PORT, "127.0.0.1", () => {
