@@ -83,6 +83,6 @@ app.post("/sendmail", (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, "127.0.0.1", () => {
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
