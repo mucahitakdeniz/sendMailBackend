@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 8000;
 // Middleware for parsing JSON data
 
 app.post("/sendmail", (req, res) => {
-  const { name, email, company, message } = req.body;
+  const { name, email, message } = req.body;
 
   const isEmailValidated = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
     email
